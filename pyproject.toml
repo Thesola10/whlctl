@@ -13,7 +13,7 @@ classifiers = [
     'Topic :: System :: Hardware :: Universal Serial Bus (USB) :: Human Interface Device (HID)',
 ]
 urls = { "Source" = "https://github.com/Thesola10/whlctl" }
-dependencies = []
+dependencies = [ "docopt" ]
 dynamic = [ "version", "description" ]
 
 [build-system]
