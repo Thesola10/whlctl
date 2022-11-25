@@ -21,6 +21,22 @@ PRODUCT = '0404\n'
 
 @functools.lru_cache
 def find_throttle() -> str:
+    '''Search for the raw HID device matching the Warthog throttle controller.
+    This function is called by `write_leds()`, and its result is cached.
+
+    Returns
+    -------
+    device : str
+        A string in the form `/dev/hidrawN` where N is a number. On Linux,
+        the file it points to represents the raw HID device for the Warthog
+        throttle.
+
+    Raises
+    ------
+    FileNotFoundError
+        No USB device matches the vendor and product ID for the Warthog
+        throttle.
+    '''
     for file in glob('/sys/class/input/js*/device'):
       with open(f"{file}/id/vendor", 'r') as fd:
         if fd.read() == VENDOR:
@@ -30,6 +46,24 @@ def find_throttle() -> str:
     raise FileNotFoundError("Did not find Warthog Throttle in USB devices")
 
 def write_leds(backlight: bool, leds: list[bool], brightness: int):
+    '''Build and send a command to adjust LED brightness as well as which LEDs
+    are powered on.
+
+    Parameters
+    ----------
+    backlight : bool
+        Whether the backlight behind the labels should be powered on.
+    leds : list[bool]
+        A list of five booleans, denoting the state for the five circular LEDs
+        from top to bottom.
+    brightness : int
+        An integer between 0 (off) and 5 (full brightness), representing the
+        brightness of all the selected light components.
+
+    Returns
+    -------
+    None
+    '''
     assert(brightness <= 0x5 and brightness >= 0x0)
     bmask = (LED_BACKLIGHT if backlight else 0) \
             | (LED_1       if leds[0] else 0) \
